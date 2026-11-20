@@ -1,62 +1,85 @@
 
-# OPNsense Firewall & IDS/IPS
+# OPNsense Firewall & IDS/IPS | Network Security Lab
 
-**Network Security | Intrusion Detection | Web Filtering | Firewall Administration**
+![OPNsense](https://img.shields.io/badge/OPNsense-Firewall-EA4B25?logo=opnsense&logoColor=white)
+![Suricata](https://img.shields.io/badge/Suricata-IDS%2FIPS-F36F21)
+![Squid](https://img.shields.io/badge/Squid-Web_Proxy-2671B9)
+![VMware](https://img.shields.io/badge/VMware-Workstation-607078)
 
 ## Objective
 
-The objective of this project was to design and implement a virtualized network security environment using OPNsense, Suricata, and Squid Proxy.
+The objective of this project was to design, deploy, and validate a virtualized network security environment using **OPNsense**, **Suricata**, and **Squid Proxy**.
 
-The project focused on configuring firewall policies, monitoring network traffic, detecting suspicious activity, and implementing web filtering and access controls.
+The lab focused on firewall administration, intrusion detection, network traffic monitoring, web filtering, and SSL inspection.
 
-A controlled environment was developed using VMware Workstation Pro, with Kali Linux serving as a security testing machine and Windows 10 acting as a client endpoint.
+Kali Linux was used to generate controlled security testing traffic, while Windows 10 served as the protected client endpoint.
 
-The project provided practical experience in network defense, intrusion detection and prevention concepts, custom security rule configuration, SSL inspection, and troubleshooting network security infrastructure.
+**Project Type:** Independent Cybersecurity Lab  
+**Completed By:** Alexander Cox  
+**Environment:** VMware Workstation Pro
 
-### Skills Learned
+---
 
-- Deploying and configuring OPNsense firewall infrastructure.
-- Managing WAN and LAN interfaces, IP addressing, and network connectivity.
-- Creating firewall rules, NAT policies, and access controls.
-- Configuring Suricata for network intrusion detection.
-- Developing and deploying custom Suricata detection rules.
-- Simulating network reconnaissance using Nmap.
-- Investigating intrusion detection alerts and tuning detection thresholds.
-- Implementing Squid Proxy for web filtering and traffic management.
-- Configuring SSL inspection certificates and trusted root authorities.
-- Troubleshooting network connectivity, certificate trust, and proxy configuration.
-- Validating security controls through controlled testing.
+## Skills Learned
 
-### Tools Used
+- Deployment and administration of OPNsense firewalls.
+- Configuration of WAN/LAN interfaces and firewall policies.
+- Network intrusion detection using Suricata.
+- Development and deployment of custom Suricata signatures.
+- Network reconnaissance testing using Nmap.
+- Investigation and analysis of security alerts.
+- Squid Proxy configuration and URL filtering.
+- SSL certificate management and trusted root configuration.
+- Network troubleshooting and connectivity validation.
+- Implementation and testing of layered network security controls.
 
-- **OPNsense:** Firewall administration, network routing, and security policy enforcement.
-- **Suricata:** Network intrusion detection and prevention engine.
-- **Squid Proxy:** HTTP/HTTPS proxy, web filtering, and access control.
-- **VMware Workstation Pro 17:** Virtualized lab infrastructure.
-- **Kali Linux:** Security testing and simulated reconnaissance.
-- **Windows 10:** Client endpoint for proxy and firewall testing.
-- **Nmap:** Network scanning and intrusion detection validation.
-- **OpenSSL:** Certificate conversion and SSL inspection configuration.
-- **FileZilla:** File transfer for custom security configuration files.
-- **Python HTTP Server:** Hosting custom Suricata rules for retrieval.
+## Tools Used
+
+| Tool | Purpose |
+|---|---|
+| OPNsense | Firewall, routing, and network security |
+| Suricata | Intrusion detection and prevention |
+| Squid Proxy | Web filtering and proxy management |
+| VMware Workstation Pro | Virtual lab infrastructure |
+| Kali Linux | Security testing and reconnaissance |
+| Windows 10 | Protected client endpoint |
+| Nmap | Network scanning and IDS validation |
+| FileZilla | Custom ruleset file transfer |
+| Python HTTP Server | Hosting custom Suricata rules |
+| OpenSSL | Certificate conversion |
 
 ---
 
 ## Lab Environment
 
-The environment consisted of three virtual machines connected through a controlled network.
+The virtualized network consisted of an OPNsense firewall, a Kali Linux testing workstation, and a Windows 10 client.
 
-| Component | Role | IP Address |
+```text
+                    External Network
+                           |
+                           |
+                    OPNsense Firewall
+                    WAN: em0 | LAN: em1
+                       10.200.200.254
+                           |
+                    10.200.200.0/24
+                           |
+              +------------+------------+
+              |                         |
+          Kali Linux                Windows 10
+         10.200.200.17             10.200.200.16
+              |                         |
+       Security Testing           Protected Client
+```
+
+### Network Configuration
+
+| Device | IP Address | Role |
 |---|---|---|
-| OPNsense | Firewall and security gateway | 10.200.200.254 |
-| Kali Linux | Security testing workstation | 10.200.200.17 |
-| Windows 10 | Protected client endpoint | 10.200.200.16 |
-| Network | Internal lab subnet | 10.200.200.0/24 |
-| Hypervisor | VMware Workstation Pro 17 | — |
-
-OPNsense was configured with separate WAN and LAN interfaces to manage traffic between the internal network and external connectivity.
-
-**Lab Scope:** All security testing was conducted within the virtual lab environment.
+| OPNsense | 10.200.200.254 | Firewall / Gateway |
+| Kali Linux | 10.200.200.17 | Security Testing |
+| Windows 10 | 10.200.200.16 | Protected Endpoint |
+| Internal Network | 10.200.200.0/24 | Lab Subnet |
 
 ---
 
@@ -64,21 +87,29 @@ OPNsense was configured with separate WAN and LAN interfaces to manage traffic b
 
 ### 1. Virtual Lab Deployment
 
-The project began by deploying OPNsense, Kali Linux, and Windows 10 virtual machines using VMware Workstation Pro.
+The project began with the deployment of OPNsense, Kali Linux, and Windows 10 virtual machines using VMware Workstation Pro.
 
-OPNsense was configured to operate as the network gateway, while Kali Linux and Windows 10 were used to generate and evaluate network traffic.
+OPNsense was configured as a FreeBSD-based virtual machine with 2 GB RAM and 2 CPU cores.
 
-The virtual machines were connected through the designated lab network to support controlled testing.
+Kali Linux was allocated at least 4 GB RAM and 2 CPU cores to support security testing.
 
-![Virtual Lab Environment](images/01-lab-environment.png)
+The virtual machines were connected through an isolated virtual network for controlled experimentation.
 
-*Ref 1: VMware virtual lab containing OPNsense, Kali Linux, and Windows 10.*
+![VMware Workstation Lab](images/vmware-workstation.png)
+
+*Ref 1: VMware Workstation showing the virtual lab environment.*
+
+![OPNsense VM Configuration](images/opnsense-vm-configuration.png)
+
+*Ref 2: OPNsense virtual machine hardware configuration.*
 
 ### 2. OPNsense Network Configuration
 
-The OPNsense firewall was configured with separate WAN and LAN network interfaces.
+OPNsense was configured with separate WAN and LAN interfaces.
 
-The LAN interface was assigned:
+The WAN interface was assigned to `em0`, while the LAN interface was assigned to `em1`.
+
+The LAN gateway was configured as:
 
 ```text
 IP Address: 10.200.200.254
@@ -86,29 +117,27 @@ Subnet Mask: 255.255.255.0
 Network: 10.200.200.0/24
 ```
 
-This address served as the default gateway for the internal virtual machines.
+This allowed OPNsense to serve as the gateway for the internal lab network.
 
-The OPNsense management interface was accessed through:
+![OPNsense Interface Assignment](images/opnsense-interface-assignment.png)
 
-```text
-https://10.200.200.254
-```
+*Ref 3: OPNsense WAN and LAN interface assignments.*
 
-![OPNsense Interface Configuration](images/02-opnsense-interfaces.png)
+![OPNsense Dashboard](images/opnsense-dashboard.png)
 
-*Ref 2: OPNsense network interface configuration showing the LAN gateway.*
+*Ref 4: OPNsense management dashboard after initial configuration.*
 
-### 3. Kali Linux Network Configuration
+### 3. Kali Linux and Windows Client Configuration
 
-Kali Linux was configured with a static IP address to communicate with the OPNsense firewall.
+Kali Linux was configured with a static IP address to communicate with OPNsense.
 
-The network configuration was updated using:
+The network configuration was modified using:
 
 ```bash
 sudo nano /etc/network/interfaces
 ```
 
-The lab configuration assigned the following network settings:
+The Kali Linux interface was configured with:
 
 ```text
 auto eth1
@@ -118,23 +147,13 @@ iface eth1 inet static
     gateway 10.200.200.254
 ```
 
-Connectivity was validated using:
+Connectivity was tested using:
 
 ```bash
 ping 10.200.200.254
 ```
 
-This resolved an initial networking issue in which Kali Linux was not correctly configured on the OPNsense LAN subnet.
-
-![Kali Linux Network Configuration](images/03-kali-network.png)
-
-*Ref 3: Kali Linux static IP configuration and connectivity testing.*
-
-### 4. Windows 10 Client Configuration
-
-The Windows 10 virtual machine was configured as the protected client endpoint.
-
-Its network settings included:
+Windows 10 was configured with the following settings:
 
 ```text
 IP Address: 10.200.200.16
@@ -142,89 +161,86 @@ Subnet Mask: 255.255.255.0
 Default Gateway: 10.200.200.254
 ```
 
-The client was used to evaluate firewall policies, web filtering, proxy access controls, and certificate trust.
+![Kali Static IP](images/kali-static-ip.png)
 
-![Windows Network Configuration](images/04-windows-network.png)
+*Ref 5: Kali Linux static IP address configuration.*
 
-*Ref 4: Windows 10 network configuration for the protected lab client.*
+![Kali Connectivity Test](images/kali-connectivity-test.png)
 
-### 5. Firewall Rules and Traffic Control
+*Ref 6: Connectivity validation between Kali Linux and OPNsense.*
 
-Firewall policies were configured in OPNsense to control traffic originating from the internal network.
+![Windows IP Configuration](images/windows-ipconfig.png)
 
-The configuration included rules for:
+*Ref 7: Windows 10 network configuration.*
 
-- Permitting authorized network communications.
-- Redirecting web traffic to the Squid proxy.
-- Restricting direct access that bypassed proxy controls.
-- Logging traffic associated with blocked connections.
+### 4. Suricata IDS/IPS Configuration
 
-The lab documentation describes proxy redirection using local proxy ports 3128 for HTTP and 3129 for HTTPS.
-
-Rule ordering was considered to ensure restrictive policies were evaluated before general allow rules.
-
-![OPNsense Firewall Rules](images/05-firewall-rules.png)
-
-*Ref 5: OPNsense firewall rules configured for network access control and proxy traffic management.*
-
-### 6. Suricata Intrusion Detection Configuration
-
-Suricata was enabled within OPNsense to monitor network traffic for suspicious activity.
+Suricata was enabled within OPNsense to monitor network traffic and detect suspicious activity.
 
 The intrusion detection configuration included:
 
-- Enabling the Suricata detection engine.
-- Selecting the relevant network interface.
-- Configuring the internal network scope.
-- Enabling promiscuous mode for traffic inspection.
-- Downloading and activating detection rulesets.
+- Enabling Suricata.
+- Selecting the appropriate monitoring interface.
+- Configuring the internal network.
+- Enabling promiscuous mode.
+- Activating detection rules.
+- Configuring intrusion prevention settings.
 
-The internal network was configured around the lab subnet:
+The internal network was defined as:
 
 ```text
 10.200.200.0/24
 ```
 
-Suricata was used to identify suspicious network activity and generate security alerts.
+![Suricata IDS IPS Settings](images/suricata-ids-ips-settings.png)
 
-![Suricata IDS Configuration](images/06-suricata-settings.png)
+*Ref 8: Suricata intrusion detection and prevention configuration.*
 
-*Ref 6: Suricata intrusion detection settings configured within OPNsense.*
+### 5. Custom Suricata Rule Deployment
 
-### 7. Custom Suricata Rule Deployment
+Custom Suricata rules were prepared to detect suspicious network reconnaissance activity.
 
-Custom Suricata detection rules were developed to identify network reconnaissance activity.
+The configuration included a custom rules file and corresponding XML ruleset metadata.
 
-The lab used custom configuration files, including:
+These files were transferred using FileZilla and hosted through a Python HTTP server running on Kali Linux.
 
-```text
-custommap.xml
-custommap.rules
-```
-
-These files were transferred and configured for use with OPNsense.
-
-A Python HTTP server was also used on Kali Linux to make custom rules accessible over the lab network.
+The HTTP server was started using:
 
 ```bash
 sudo python3 -m http.server 80
 ```
 
-The rules were hosted from the Kali Linux system at:
+The files were made accessible through:
 
 ```text
 http://10.200.200.17/
 ```
 
-The custom ruleset was then incorporated into the Suricata configuration.
+OPNsense was configured to retrieve and activate the custom ruleset.
 
-![Custom Suricata Rules](images/07-custom-suricata-rules.png)
+![Custom Suricata Rule](images/custom-suricata-rule.png)
 
-*Ref 7: Custom Suricata rule configuration used to detect network reconnaissance activity.*
+*Ref 9: Custom Suricata signature for detecting reconnaissance activity.*
 
-### 8. Nmap Intrusion Detection Testing
+![Suricata Ruleset XML](images/suricata-ruleset-xml.png)
 
-To validate the intrusion detection configuration, an Nmap SYN scan was executed from Kali Linux against the OPNsense firewall.
+*Ref 10: XML metadata used to register the custom ruleset.*
+
+![FileZilla Transfer](images/filezilla-rules-transfer.png)
+
+*Ref 11: FileZilla used to transfer custom rule files.*
+
+![Kali HTTP Server](images/kali-http-rule-server.png)
+
+*Ref 12: Python HTTP server hosting the custom Suricata rules.*
+
+![Suricata Rules Download](images/suricata-rules-download.png)
+
+*Ref 13: OPNsense configuration for retrieving the custom ruleset.*
+
+### 6. Nmap Intrusion Detection Testing
+
+A controlled Nmap SYN scan was executed from Kali Linux against the OPNsense firewall.
 
 The following command was used:
 
@@ -232,192 +248,166 @@ The following command was used:
 sudo nmap -sS -Pn --top-ports 500 10.200.200.254
 ```
 
-**Command Breakdown**
+The scan simulated network reconnaissance activity within the isolated lab.
 
-| Parameter | Purpose |
+| Parameter | Description |
 |---|---|
-| `sudo` | Executes the command with elevated privileges |
-| `-sS` | Performs TCP SYN scanning |
-| `-Pn` | Skips host discovery |
-| `--top-ports 500` | Scans the 500 most common ports |
-| `10.200.200.254` | OPNsense target IP address |
+| `-sS` | TCP SYN scan |
+| `-Pn` | Skip host discovery |
+| `--top-ports 500` | Scan 500 common ports |
+| `10.200.200.254` | Target firewall |
 
-This simulated reconnaissance activity against the lab firewall.
+![Nmap SYN Scan](images/nmap-syn-scan.png)
 
-![Nmap Scan Execution](images/08-nmap-scan.png)
+*Ref 14: Kali Linux executing an Nmap SYN scan against OPNsense.*
 
-*Ref 8: Kali Linux executing an Nmap SYN scan against the OPNsense firewall.*
+### 7. Suricata Alert Analysis
 
-### 9. Intrusion Detection Alert Analysis
+After the Nmap scan, Suricata alerts were reviewed to determine whether the custom detection rules identified the activity.
 
-Following the Nmap scan, Suricata alerts were reviewed to determine whether the custom detection rules identified the reconnaissance activity.
+The detection workflow generated alerts associated with a possible Nmap SYN stealth scan.
 
-The custom rule was designed to generate an alert similar to:
+During testing, detection thresholds and rule configurations were adjusted to improve alert visibility.
+
+![Suricata Scan Alerts](images/suricata-scan-alerts.png)
+
+*Ref 15: Suricata security alerts generated during Nmap reconnaissance testing.*
+
+**Result:** The custom detection workflow successfully generated alerts for the simulated scan. Alert generation confirms detection, not necessarily that the traffic was blocked.
+
+### 8. SSL Certificate Configuration
+
+A certificate was generated through OPNsense to support SSL inspection testing.
+
+The exported certificate required conversion from `.p12` to `.crt` format for installation on the Windows client.
+
+The certificate was imported into the Windows Trusted Root Certification Authorities store.
+
+This established certificate trust for the controlled proxy inspection environment.
+
+![OPNsense Certificate Configuration](images/opnsense-certificate-configuration.png)
+
+*Ref 16: Certificate configuration within OPNsense.*
+
+![Windows Certificate Import](images/windows-certificate-import.png)
+
+*Ref 17: Certificate import into the Windows trusted root store.*
+
+### 9. Squid Proxy Configuration
+
+Squid Proxy was installed and configured within OPNsense to provide centralized web filtering and access control.
+
+The proxy configuration included:
+
+- Enabling the Squid service.
+- Configuring proxy interfaces.
+- Applying access control policies.
+- Configuring HTTP and HTTPS proxy handling.
+- Implementing traffic redirection.
+- Testing proxy connectivity.
+
+The documented proxy forwarding design included:
 
 ```text
-POSSIBLE NMAP SYNSTEALTH SCAN DETECTED
+HTTP Proxy Port: 3128
+HTTPS Proxy Port: 3129
 ```
 
-During testing, adjustments were required to address rule loading and detection threshold behavior.
+![Squid Proxy Settings](images/squid-proxy-settings.png)
 
-The configuration was refined to improve the visibility of the simulated scanning activity.
+*Ref 18: Squid Proxy configuration in OPNsense.*
 
-![Suricata Detection Alerts](images/09-suricata-alerts.png)
+![Proxy NAT Forwarding](images/proxy-nat-forwarding.png)
 
-*Ref 9: Suricata intrusion detection alerts generated during controlled Nmap testing.*
+*Ref 19: NAT port forwarding configuration for proxy traffic.*
 
-**Detection vs. Prevention:** The documented Nmap test validates intrusion detection. It does not independently establish that Suricata dropped or prevented the scan traffic.
+### 10. Web Filtering and Firewall Access Controls
 
-### 10. Squid Proxy Configuration
+URL blacklists were configured to restrict access to selected websites.
 
-Squid Proxy was configured within OPNsense to provide centralized web traffic management and filtering.
+Firewall rules were also configured to manage network traffic and reduce the ability of clients to bypass proxy controls.
 
-The proxy was used to:
+The Windows 10 virtual machine was used to validate the configured restrictions.
 
-- Process web requests from the Windows 10 client.
-- Apply access control policies.
-- Restrict access to selected websites.
-- Support traffic logging and inspection.
-- Enforce network browsing restrictions.
+![Squid Blacklist](images/squid-blacklist.png)
 
-The lab also configured firewall policies intended to prevent clients from bypassing proxy controls.
+*Ref 20: Squid Proxy blacklist and access control configuration.*
 
-![Squid Proxy Configuration](images/10-squid-proxy.png)
+![LAN Firewall Rule Configuration](images/lan-firewall-rule-configuration.png)
 
-*Ref 10: Squid Proxy configuration within the OPNsense firewall.*
+*Ref 21: OPNsense LAN firewall rule configuration.*
 
-### 11. Web Filtering and Access Control
+![LAN Firewall Rules](images/lan-firewall-rules.png)
 
-Access Control Lists (ACLs) were configured to restrict access to selected website categories and destinations.
+*Ref 22: Firewall policies controlling traffic on the internal network.*
 
-The lab tested web filtering using a Windows 10 browser.
+### 11. Web Filtering Validation
 
-One documented test involved attempting to access Facebook.
+The Windows 10 client was used to attempt access to a restricted website.
 
-The Squid proxy returned an **Access Denied** response, demonstrating that the configured access control policy was applied.
+Squid Proxy returned an **Access Denied** response, confirming that the configured web filtering policy was applied.
 
-An initial ACL database issue was resolved by using an alternative compatible blacklist source.
+![Squid Access Denied](images/squid-access-denied.png)
 
-![Squid Web Filtering](images/11-web-filtering.png)
-
-*Ref 11: Windows 10 browser displaying a Squid access-denied response during web filtering validation.*
-
-### 12. SSL Inspection and Certificate Configuration
-
-SSL inspection was configured to support inspection of encrypted web traffic in the controlled lab environment.
-
-A certificate was generated through OPNsense and exported for installation on the Windows 10 client.
-
-The exported certificate was converted from `.p12` to `.crt` format using OpenSSL.
-
-A representative certificate extraction command is:
-
-```bash
-openssl pkcs12 -in proxy-ca.p12 -clcerts -nokeys -out proxy-ca.crt
-```
-
-The certificate was then imported into the Windows Trusted Root Certification Authorities store.
-
-This allowed the Windows client to recognize the lab's trusted proxy certificate.
-
-During troubleshooting, the proxy configuration was adjusted to use HTTP for the proxy connection rather than attempting to connect to the proxy itself over HTTPS.
-
-![SSL Certificate Configuration](images/12-ssl-certificate.png)
-
-*Ref 12: Certificate conversion and installation process for Squid SSL inspection.*
-
-### 13. Troubleshooting and Configuration Refinement
-
-Several configuration issues were encountered during deployment and testing.
-
-| Issue | Resolution |
-|---|---|
-| Kali Linux network connectivity | Configured static IP addressing on the correct interface |
-| Windows client connectivity | Reviewed gateway, subnet, and virtual network configuration |
-| Suricata rules not loading correctly | Corrected custom ruleset configuration and deployment |
-| Nmap alerts not appearing consistently | Adjusted detection rules and thresholds |
-| Squid blacklist update failures | Replaced the ACL source with a compatible blacklist |
-| Certificate trust errors | Converted and imported the certificate into Windows |
-| Proxy connection issues | Corrected HTTP proxy connection settings |
-| OPNsense update problems | Adjusted IPv6 configuration during troubleshooting |
-
-These challenges provided practical experience in troubleshooting integrated network security systems.
-
-![Troubleshooting and Validation](images/13-troubleshooting.png)
-
-*Ref 13: Configuration troubleshooting and validation of network security services.*
+*Ref 23: Squid Proxy denying access to a restricted website.*
 
 ---
 
-## Results and Findings
+## Results
 
-The project demonstrated the integration of multiple security controls within a single virtualized network.
+The project demonstrated the implementation of multiple defensive security controls within a virtualized network environment.
 
-### Key Results
-
-- Deployed an OPNsense firewall within a VMware virtual environment.
-- Configured a dedicated LAN network with Kali Linux and Windows 10 endpoints.
-- Established OPNsense as the network gateway.
-- Implemented firewall policies for traffic management and proxy access.
-- Configured Suricata intrusion detection and custom detection rules.
-- Simulated network reconnaissance using Nmap SYN scanning.
-- Investigated intrusion detection alerts and refined rule thresholds.
-- Configured Squid Proxy for web filtering and access control.
-- Validated web filtering through a Squid access-denied response.
-- Configured certificate trust for SSL inspection testing.
-- Resolved networking, proxy, ruleset, and certificate configuration issues.
-
-### Security Controls Implemented
-
-| Security Control | Purpose |
+| Security Control | Result |
 |---|---|
-| OPNsense Firewall | Network access control and traffic management |
-| Suricata IDS | Detection of suspicious network activity |
-| Custom Detection Rules | Identification of simulated reconnaissance |
-| Squid Proxy | Centralized web traffic filtering |
-| Access Control Lists | Restriction of selected web destinations |
-| SSL Inspection | Controlled inspection of encrypted web traffic |
-| Firewall Logging | Visibility into blocked and permitted traffic |
+| OPNsense Firewall | Deployed as the internal network gateway |
+| Network Configuration | Configured communication between lab systems |
+| Suricata IDS | Detected simulated network reconnaissance |
+| Custom Detection Rules | Generated alerts for controlled Nmap activity |
+| Squid Proxy | Configured centralized web filtering |
+| URL Blacklists | Restricted access to selected websites |
+| SSL Certificate Trust | Configured for proxy inspection testing |
+| Firewall Policies | Implemented network access controls |
 
-### Key Takeaways
+### Key Findings
 
-**Layered network defense improves visibility and control.**
+- Custom Suricata signatures can identify suspicious reconnaissance activity when correctly deployed and tested.
+- Detection thresholds and rule configurations affect the visibility of security events.
+- Proxy-based filtering can enforce restrictions on client web access.
+- Correct network addressing and gateway configuration are essential for reliable communication.
+- Certificate management is an important component of encrypted traffic inspection.
+- Combining firewall rules, intrusion detection, and proxy filtering provides layered network defense.
 
-Combining firewall policies, intrusion detection, and proxy filtering provided multiple opportunities to monitor and restrict network activity.
+---
 
-**Custom detection rules require validation and tuning.**
+## Challenges and Resolutions
 
-Developing a rule is only one part of intrusion detection engineering. Effective deployment also requires testing, alert analysis, and threshold adjustments.
-
-**Security infrastructure depends on correct network configuration.**
-
-Incorrect interface addressing, gateway settings, or virtual network configuration can prevent security tools from communicating effectively.
-
-**Certificate management is essential for encrypted traffic inspection.**
-
-SSL inspection requires carefully configured trust relationships and appropriate controls to protect user privacy and maintain secure communications.
+| Challenge | Resolution |
+|---|---|
+| Kali Linux connectivity issues | Configured a static IP address on the correct interface |
+| Windows network connectivity | Corrected network and gateway settings |
+| Custom Suricata rules not loading | Adjusted ruleset configuration and deployment |
+| Nmap alerts not appearing consistently | Tuned detection rules and thresholds |
+| Proxy blacklist update failures | Used a compatible blacklist source |
+| Certificate trust errors | Converted and imported the certificate |
+| Proxy connection issues | Corrected proxy protocol configuration |
+| OPNsense update failures | Adjusted IPv6 settings during troubleshooting |
 
 ---
 
 ## Conclusion
 
-This project provided hands-on experience in deploying and managing a layered network security environment using OPNsense, Suricata, and Squid Proxy.
+This independent cybersecurity lab provided hands-on experience in implementing a layered network security environment using OPNsense, Suricata, and Squid Proxy.
 
-The integration of firewall administration, custom intrusion detection rules, controlled network reconnaissance, web filtering, and SSL inspection strengthened my understanding of defensive network security operations.
+The project strengthened my understanding of firewall administration, intrusion detection, custom security rules, network reconnaissance, web filtering, SSL certificate management, and troubleshooting.
 
-Troubleshooting connectivity issues, detection rule behavior, proxy configurations, and certificate trust also reinforced the importance of systematic problem-solving in cybersecurity.
-
-The project demonstrates practical skills relevant to network security engineering, security operations, intrusion detection, and firewall administration.
+By deploying and testing these technologies in a controlled environment, I developed practical skills relevant to Security Operations, Network Security, and defensive cybersecurity engineering.
 
 ---
 
 ## References
 
-- [OPNsense Official Documentation](https://docs.opnsense.org/)
-- [OPNsense Intrusion Prevention Documentation](https://docs.opnsense.org/manual/ips.html)
-- [OPNsense Firewall Rules](https://docs.opnsense.org/manual/firewall.html)
-- [OPNsense Web Proxy Documentation](https://docs.opnsense.org/manual/proxy.html)
+- [OPNsense Documentation](https://docs.opnsense.org/)
 - [Suricata Documentation](https://docs.suricata.io/)
-- [Nmap Reference Guide](https://nmap.org/book/man.html)
 - [Squid Proxy Documentation](https://www.squid-cache.org/Doc/)
+- [Nmap Reference Guide](https://nmap.org/book/man.html)
 - [OpenSSL Documentation](https://docs.openssl.org/)
